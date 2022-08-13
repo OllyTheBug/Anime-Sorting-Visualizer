@@ -1,6 +1,6 @@
 /* -------------------------------- Constants ------------------------------- */
-let arrayMaxHeight = 500;
-
+const arrayMaxHeight = 500;
+const animationDuration = 500;
 /* -------------------------------------------------------------------------- */
 /*                             Building the Array                             */
 /* -------------------------------------------------------------------------- */
@@ -98,19 +98,94 @@ const bubbleSort = () => {
     return moves;
 }
 
+/* ----------------------------- Insertion Sort ----------------------------- */
+const insertionSort = () => {
+    let container = document.getElementById('array-container');
+    let bars = container.children;
+    let len = bars.length;
+    let moves = [];
+    //iterate over each element in the array
+    for (let i = 0; i < len; i++) {
+        for (let j = i; j > 0; j--) {
+            //bar 1 is the j'th bar
+            let bar1 = bars[j];
+            let bar2 = bars[j - 1];
+            if (bar1.offsetHeight < bar2.offsetHeight) {
+                moves.push({ 'type': 'swap', 'index1': j, 'index2': j - 1 });
+                bar1.before(bar2);
+            }
+        }
+
+
+
+    }
+    //move the bars to their original positions
+    for (let i = 0; i < bars.length; i++) {
+        //bar with a data-key of i
+        let ithBar = document.querySelector(`[data-key="${i}"]`);
+        //move ithBar to the start of the array
+        container.insertBefore(ithBar, bars.firstChild);
+    }
+    return moves;
+}
+
+/* ----------------------------- Selection sort ----------------------------- */
+const selectionSort = () => {
+    let container = document.getElementById('array-container');
+    let bars = container.children;
+    let len = bars.length;
+    let moves = [];
+    //iterate over each element in the array
+    for (let i = 0; i < len; i++) {
+        //set the current minimum to the ith bar
+        let currentMin = bars[i];
+        //iterate over the rest of the array
+        for (let j = i + 1; j < len; j++) {
+            //bar 1 is the j'th bar
+            let bar1 = bars[j];
+            //if the j'th bar is smaller than the current minimum
+            if (bar1.offsetHeight < currentMin.offsetHeight) {
+                //set the current minimum to the j'th bar
+                currentMin = bar1;
+                //swap the j'th bar with the current minimum
+
+                moves.push({ 'type': 'swap', 'index1': j, 'index2': i });
+            }
+        }
+    }
+    //move the bars to their original positions
+    for (let i = 0; i < bars.length; i++) {
+        //bar with a data-key of i
+        let ithBar = document.querySelector(`[data-key="${i}"]`);
+        //move ithBar to the start of the array
+        container.insertBefore(ithBar, bars.firstChild);
+    }
+    return moves;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                 Animations                                 */
 /* -------------------------------------------------------------------------- */
 
-function animateBubbleSort(){
-    moves = bubbleSort();
+function animateSort(type) {
+    switch (type) {
+        case 'bubble':
+            moves = bubbleSort();
+            break;
+        case 'insertion':
+            moves = insertionSort();
+            break;
+        case 'selection':
+            moves = selectionSort();
+            break;
+        default:
+            console.log('No sort type selected');
+    }
     //positions is an array holding the ith x-coordinate of each bar slot
     //bars is an array of bar elements
     let { positions, bars } = getBarPositions();
     animateMovesList(positions, bars, moves);
 }
-
 
 function animateMovesList(positions, bars, moves) {
     for (let i = 0; i < moves.length; i++) {
@@ -120,7 +195,7 @@ function animateMovesList(positions, bars, moves) {
                     let bar1 = bars[moves[i].index1];
                     let bar2 = bars[moves[i].index2];
                     animateBarSwap(positions, bar1, bar2, i);
-                }, i * 300);
+                }, i * 2 * animationDuration);
 
                 break;
         }
@@ -143,7 +218,7 @@ const animateBarSwap = (positions, bar1, bar2, i) => {
     anime({
         targets: bar1,
         left: positions[moves[i].index2],
-        duration: 100,
+        duration: animationDuration,
         easing: 'easeInOutQuad',
         complete: () => {
             bar1Done = true;
@@ -153,7 +228,7 @@ const animateBarSwap = (positions, bar1, bar2, i) => {
     anime({
         targets: bar2,
         left: positions[moves[i].index1],
-        duration: 100,
+        duration: animationDuration,
         easing: 'easeInOutQuad',
         complete: () => {
             bar2Done = true;
