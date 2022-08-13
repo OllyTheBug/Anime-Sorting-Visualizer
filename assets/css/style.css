@@ -1,0 +1,47 @@
+@import url('https://cdn.jsdelivr.net/npm/picnic');
+
+.stack {
+    border: solid 1px #ccc;
+}
+
+#control-and-array {
+    width: 75vw;
+    margin:auto;
+    margin-top: 10vh;
+}
+
+.array-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    margin: auto;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: black; 
+
+    border-radius: 5px;
+    background-color: #f5f5f5;
+
+    justify-content: center;
+    align-items: end;
+}
+
+.bar {
+    position: absolute;
+    border: solid black 1px;
+    margin: 0;
+    float:left;
+    background-color: cornflowerblue;
+    padding: 0;
+    /* transition: left 1s; */
+}
+
+#controls{
+    padding:0px;
+    margin:0px;
+}
+div#title-box>* {
+    margin:0px;
+    padding: 0px;
+}
