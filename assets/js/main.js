@@ -1,6 +1,3 @@
-/* --------------------------------- Imports -------------------------------- */
-//anime
-import anime from './anime.es.js';
 /* -------------------------------- Constants ------------------------------- */
 let arrayMaxHeight = 500;
 
@@ -43,6 +40,17 @@ const createBar = (value, key, width, height) => {
     return bar;
 
 }
+/* ---------------------------- Get bar positions --------------------------- */
+function getBarPositions() {
+    let bars = document.getElementById('array-container').children;
+    let positions = [];
+    for (let i = 0; i < bars.length; i++) {
+        positions.push(bars[i].getBoundingClientRect().x);
+    }
+    return { positions, bars };
+}
+
+
 /* ----- Get color based on a value, with red for high and blue for low ----- */
 const getColor = (value) => {
     //blue is higher for lower values
@@ -95,25 +103,28 @@ const bubbleSort = () => {
 /*                                 Animations                                 */
 /* -------------------------------------------------------------------------- */
 
-const animateMovesList = (moves) => {
-    let bars = document.getElementById('array-container').children;
-    let timeline = anime.timeline({
-        easing: 'easeOutExpo',
-        duration: 1000,
-    });
-    for (let i = 0; i < moves.length - 1; i++) {
+function animateBubbleSort(){
+    moves = bubbleSort();
+    //positions is an array holding the ith x-coordinate of each bar slot
+    //bars is an array of bar elements
+    let { positions, bars } = getBarPositions();
+    animateMovesList(positions, bars, moves);
+}
+
+
+function animateMovesList(positions, bars, moves) {
+    for (let i = 0; i < moves.length; i++) {
         switch (moves[i].type) {
             case 'swap':
-                let bar1 = document.querySelector(`[data-key="${moves[i].index1}"]`);
-                console.log([moves[i].index1, moves[i].index2])
-                let bar2 = document.querySelector(`[data-key="${moves[i].index2}"]`);
-                addBarSwapToTimeline(bar1, bar2, timeline);
+                setTimeout(() => {
+                    let bar1 = bars[moves[i].index1];
+                    let bar2 = bars[moves[i].index2];
+                    animateBarSwap(positions, bar1, bar2, i);
+                }, i * 300);
 
+                break;
         }
     }
-
-    //play timeline
-    timeline.play();
 }
 
 const swapData = (bar1, bar2) => {
@@ -125,32 +136,7 @@ const swapData = (bar1, bar2) => {
 }
 
 /* ---------------- Add a position swap to the Anime timeline --------------- */
-const addBarSwapToTimeline = (bar1, bar2, timeline) => {
-    let bar1Pos = bar1.getBoundingClientRect();
-    let bar2Pos = bar2.getBoundingClientRect();
-    timeline.add({
-        targets: bar1,
-        left: bar2Pos.left,
-    })
-    timeline.add({
-        targets: bar2,
-        left: bar1Pos.left,
-        complete: () => {
-            swapData(bar1, bar2);
-        }
-    })
-
-}
-
-
-function swapBars(bar1, i, bar2) {
-    bar1.style.left = positions[moves[i].index2] + 'px';
-    //set bar2's left to positions[moves[i].index1].left
-    bar2.style.left = positions[moves[i].index1] + 'px';
-    bar1.before(bar2);
-}
-
-const animateBarSwap = (bar1, bar2, i) => {
+const animateBarSwap = (positions, bar1, bar2, i) => {
     //move bar1 to bar2's position
     let bar1Done = false;
     let bar2Done = false;
@@ -182,33 +168,14 @@ const animateBarSwap = (bar1, bar2, i) => {
 /* -------------------------------------------------------------------------- */
 /*                                  Main code                                 */
 /* -------------------------------------------------------------------------- */
-createBarArray(10);
-
-let moves;
 
 
-moves = bubbleSort();
-let bars = document.getElementById('array-container').children;
-// for each move, swap the bars
-// get an array of each bar's position
-let positions = [];
-for (let i = 0; i < bars.length; i++) {
-    positions.push(bars[i].getBoundingClientRect().x);
-}
 
-for (let i = 0; i < moves.length; i++) {
-    switch (moves[i].type) {
-        case 'swap':
-            setTimeout(() => {
-                let bar1 = bars[moves[i].index1];
-                let bar2 = bars[moves[i].index2];
-                animateBarSwap(bar1, bar2, i);
-            }, i * 300);
 
-            break;
-    }
-}
 
-//animateMovesList(moves);
+
+
+
+
 
 

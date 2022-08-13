@@ -8,8 +8,6 @@
     <!-- jquery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <!-- p5js -->
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
     <title>Document</title>
 </head>
 
@@ -23,8 +21,8 @@
                     <h1>Sorting Visualizer</h1>
                     <p>Nobody asked for</p>
                 </div>
-                <span class="stack button" onclick="generate_array()">Generate Array</span>
-                <span class="stack button"></span>
+                <span class="stack button" onclick="createBarArray(10)">Generate Array</span>
+                <span class="stack button" onclick="animateBubbleSort()">Bubble Sort</span>
                 <span class="stack button"></span>
                 <span class="stack button"></span>
                 <span class="stack button"></span>
@@ -33,7 +31,8 @@
         <div id="array-container"></div>
     </div>
 
-    <script type="module" src="./assets/js/main.js"></script>
+    <script src="./assets/js/anime.js"></script>
+    <script src="./assets/js/main.js"></script>
 </body>
 
 </html>
