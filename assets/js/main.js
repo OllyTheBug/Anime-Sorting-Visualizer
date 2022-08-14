@@ -150,25 +150,23 @@ const selectionSort = () => {
     let moves = [];
     //iterate over each element in the array
     for (let i = 0; i < len; i++) {
-        //set the current minimum to the ith bar
-        let currentMin = bars[i];
-        //iterate over the rest of the array
+        let min = i;
         for (let j = i + 1; j < len; j++) {
-            //bar 1 is the j'th bar
-            let bar1 = bars[j];
-            //if the j'th bar is smaller than the current minimum
-            if (bar1.offsetHeight < currentMin.offsetHeight) {
-                //set the current minimum to the j'th bar
-                currentMin = bar1;
-                //swap the j'th bar with the current minimum
-
-                moves.push({ 'type': 'swap', 'index1': j, 'index2': i });
+            //if the j'th bar is smaller than the min
+            if (bars[j].offsetHeight < bars[min].offsetHeight) {
+                min = j;
             }
         }
+        //if the min is not the i'th bar
+        if (min !== i) {
+            moves.push({ 'type': 'swap', 'index1': i, 'index2': min });
+            swapBarsInDom(i, min);
+        }
+        //move the bars to their original positions
     }
-    //move the bars to their original positions
     resetBars(bars, container);
     return moves;
+
 }
 
 
@@ -220,12 +218,7 @@ const animateBarSwap = (index1, index2) => {
     let bar2 = bars[index2];
     bar1pos = positions[index1];
     bar2pos = positions[index2];
-    bar2NextSibling = bar2.nextSibling;
-
-    //insert bar2 before bar1
-    container.insertBefore(bar2, bar1);
-    //insert bar1 before bar2's next sibling
-    container.insertBefore(bar1, bar2NextSibling);
+    swapBarsInDom(index1, index2);
     //They are now swapped in the DOM, but the position is absolute so we need to swap their x values
 
     //move bar1 to bar2's position
@@ -262,3 +255,14 @@ createBarArray(15);
 
 
 
+function swapBarsInDom(index1, index2) {
+    container = document.getElementById('array-container');
+    bars = container.children;
+    let bar1 = bars[index1];
+    let bar2 = bars[index2];
+    bar2NextSibling = bar2.nextSibling;
+    //insert bar2 before bar1
+    container.insertBefore(bar2, bar1);
+    //insert bar1 before bar2's next sibling
+    container.insertBefore(bar1, bar2NextSibling);
+}
