@@ -1,6 +1,6 @@
 /* -------------------------------- Constants ------------------------------- */
 const arrayMaxHeight = 500;
-const animationDuration = 500;
+const animationDuration = 250;
 /* -------------------------------------------------------------------------- */
 /*                             Building the Array                             */
 /* -------------------------------------------------------------------------- */
@@ -40,17 +40,6 @@ const createBar = (value, key, width, height) => {
     return bar;
 
 }
-/* ---------------------------- Get bar positions --------------------------- */
-function getBarPositions() {
-    let bars = document.getElementById('array-container').children;
-    let positions = [];
-    for (let i = 0; i < bars.length; i++) {
-        positions.push(bars[i].getBoundingClientRect().x);
-    }
-    return positions;
-}
-
-
 /* ----- Get color based on a value, with red for high and blue for low ----- */
 const getColor = (value) => {
     //blue is higher for lower values
@@ -60,6 +49,30 @@ const getColor = (value) => {
     const red = Math.floor(255 - (255 / value));
     return `rgb(${red}, ${green}, ${blue})`;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                              Bar array helpers                             */
+/* -------------------------------------------------------------------------- */
+
+/* ---------------------------- Get bar positions --------------------------- */
+function getBarPositions() {
+    let bars = document.getElementById('array-container').children;
+    let positions = [];
+    for (let i = 0; i < bars.length; i++) {
+        positions.push(bars[i].getBoundingClientRect().x);
+    }
+    return positions;
+}
+/* ---------- Move bars back to their original positions in the DOM --------- */
+function resetBars(bars, container) {
+    for (let i = 0; i < bars.length; i++) {
+        //bar with a original-pos of i
+        let ithBar = document.querySelector(`[original-pos="${i}"]`);
+        //move ithBar to the start of the array
+        container.insertBefore(ithBar, bars.firstChild);
+    }
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                             Sorting algorithms                             */
@@ -154,14 +167,11 @@ const selectionSort = () => {
         }
     }
     //move the bars to their original positions
-    for (let i = 0; i < bars.length; i++) {
-        //bar with a original-pos of i
-        let ithBar = document.querySelector(`[original-pos="${i}"]`);
-        //move ithBar to the start of the array
-        container.insertBefore(ithBar, bars.firstChild);
-    }
+    resetBars(bars, container);
     return moves;
 }
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                                 Animations                                 */
@@ -218,7 +228,7 @@ const animateBarSwap = (index1, index2) => {
     container.insertBefore(bar1, bar2NextSibling);
     //They are now swapped in the DOM, but the position is absolute so we need to swap their x values
 
-    
+    //move bar1 to bar2's position
     anime({
         targets: bar1,
         left: bar2pos,
@@ -242,7 +252,7 @@ const animateBarSwap = (index1, index2) => {
 /*                                  Main code                                 */
 /* -------------------------------------------------------------------------- */
 
-
+createBarArray(15);
 
 
 
