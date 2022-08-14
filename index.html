@@ -20,8 +20,13 @@
                     <p>Yet another</p>
                     <h1>Sorting Visualizer</h1>
                     <p>Nobody asked for</p>
+                    <hr>
                 </div>
-                <span class="stack button" onclick="createBarArray(10)">Generate Array</span>
+                <div class="slidecontainer">
+                    <h3 style="margin-top:10px; padding:0px;">Size:</h3>
+                    <input type="range" style="margin:0px; padding:0px;" min="1" max="100" value="50" class="slider" id="sizeSlider">
+                </div>
+                <span class="stack button" onclick="createBarArray()">Generate Array</span>
                 <span class="stack button" onclick="animateSort('bubble')">Bubble Sort</span>
                 <span class="stack button" onclick="animateSort('selection')">Selection Sort</span>
                 <span class="stack button"></span>

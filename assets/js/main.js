@@ -1,6 +1,7 @@
 /* -------------------------------- Constants ------------------------------- */
 const arrayMaxHeight = 500;
 const animationDuration = 250;
+let arraySize = 15;
 /* -------------------------------------------------------------------------- */
 /*                             Building the Array                             */
 /* -------------------------------------------------------------------------- */
@@ -14,13 +15,14 @@ const generateRandomArray = (length, min, max) => {
     return arr;
 }
 /* ----------------- fill #array-container with random bars ----------------- */
-const createBarArray = (length) => {
+const createBarArray = () => {
+    let length = arraySize;
     let container = document.getElementById('array-container');
     let arr = generateRandomArray(length, 0, arrayMaxHeight);
     const len = arr.length;
     container.innerHTML = '';
     //width = container's width / length
-    let width = (container.offsetWidth / len) - 10;
+    let width = (container.offsetWidth / len) - 1;
     for (let i = 0; i < len; i++) {
         let bar = createBar(arr[i], i, width, arr[i]);
         //set bar's left to i * width
@@ -73,7 +75,17 @@ function resetBars(bars, container) {
     }
 }
 
-
+function swapBarsInDom(index1, index2) {
+    container = document.getElementById('array-container');
+    bars = container.children;
+    let bar1 = bars[index1];
+    let bar2 = bars[index2];
+    bar2NextSibling = bar2.nextSibling;
+    //insert bar2 before bar1
+    container.insertBefore(bar2, bar1);
+    //insert bar1 before bar2's next sibling
+    container.insertBefore(bar1, bar2NextSibling);
+}
 /* -------------------------------------------------------------------------- */
 /*                             Sorting algorithms                             */
 /* -------------------------------------------------------------------------- */
@@ -248,21 +260,20 @@ const animateBarSwap = (index1, index2) => {
 createBarArray(15);
 
 
+var slider = document.getElementById("sizeSlider");
+//var output = document.getElementById("demo");
+//output.innerHTML = slider.value; // Display the default slider value
 
-
-
-
-
-
-
-function swapBarsInDom(index1, index2) {
-    container = document.getElementById('array-container');
-    bars = container.children;
-    let bar1 = bars[index1];
-    let bar2 = bars[index2];
-    bar2NextSibling = bar2.nextSibling;
-    //insert bar2 before bar1
-    container.insertBefore(bar2, bar1);
-    //insert bar1 before bar2's next sibling
-    container.insertBefore(bar1, bar2NextSibling);
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function () {
+    //set array size to the value of the slider as an integer
+    arraySize = parseInt(this.value);
+    createBarArray(this.value);
 }
+
+
+
+
+
+
+
