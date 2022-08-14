@@ -32,7 +32,7 @@ const createBarArray = (length) => {
 const createBar = (value, key, width, height) => {
     let bar = document.createElement('div');
     bar.classList.add('bar');
-    bar.setAttribute('data-key', key);
+    bar.setAttribute('original-pos', key);
     bar.style.height = height + 'px';
     bar.style.width = width + 'px';
     bar.style.backgroundColor = getColor(value);
@@ -47,7 +47,7 @@ function getBarPositions() {
     for (let i = 0; i < bars.length; i++) {
         positions.push(bars[i].getBoundingClientRect().x);
     }
-    return { positions, bars };
+    return positions;
 }
 
 
@@ -89,8 +89,8 @@ const bubbleSort = () => {
     } while (swapped);
     //move the bars to their original positions
     for (let i = 0; i < bars.length; i++) {
-        //bar with a data-key of i
-        let ithBar = document.querySelector(`[data-key="${i}"]`);
+        //bar with a original-pos of i
+        let ithBar = document.querySelector(`[original-pos="${i}"]`);
         //move ithBar to the start of the array
         container.insertBefore(ithBar, bars.firstChild);
     }
@@ -121,8 +121,8 @@ const insertionSort = () => {
     }
     //move the bars to their original positions
     for (let i = 0; i < bars.length; i++) {
-        //bar with a data-key of i
-        let ithBar = document.querySelector(`[data-key="${i}"]`);
+        //bar with a original-pos of i
+        let ithBar = document.querySelector(`[original-pos="${i}"]`);
         //move ithBar to the start of the array
         container.insertBefore(ithBar, bars.firstChild);
     }
@@ -155,8 +155,8 @@ const selectionSort = () => {
     }
     //move the bars to their original positions
     for (let i = 0; i < bars.length; i++) {
-        //bar with a data-key of i
-        let ithBar = document.querySelector(`[data-key="${i}"]`);
+        //bar with a original-pos of i
+        let ithBar = document.querySelector(`[original-pos="${i}"]`);
         //move ithBar to the start of the array
         container.insertBefore(ithBar, bars.firstChild);
     }
@@ -181,61 +181,59 @@ function animateSort(type) {
         default:
             console.log('No sort type selected');
     }
-    //positions is an array holding the ith x-coordinate of each bar slot
-    //bars is an array of bar elements
-    let { positions, bars } = getBarPositions();
-    animateMovesList(positions, bars, moves);
+
+    animateMovesList(moves);
 }
 
-function animateMovesList(positions, bars, moves) {
+function animateMovesList(moves) {
     for (let i = 0; i < moves.length; i++) {
         switch (moves[i].type) {
             case 'swap':
                 setTimeout(() => {
-                    let bar1 = bars[moves[i].index1];
-                    let bar2 = bars[moves[i].index2];
-                    animateBarSwap(positions, bar1, bar2, i);
+                    let index1 = moves[i].index1;
+                    let index2 = moves[i].index2;
+                    animateBarSwap(index1, index2);
                 }, i * 2 * animationDuration);
-
                 break;
         }
     }
 }
 
-const swapData = (bar1, bar2) => {
-    //swap the bars' data-key attributes
-    let bar1Key = bar1.getAttribute('data-key');
-    let bar2Key = bar2.getAttribute('data-key');
-    bar1.setAttribute('data-key', bar2Key);
-    bar2.setAttribute('data-key', bar1Key);
-}
-
-/* ---------------- Add a position swap to the Anime timeline --------------- */
-const animateBarSwap = (positions, bar1, bar2, i) => {
+/* ------------ Swap two bars in the array-container and animate ------------ */
+const animateBarSwap = (index1, index2) => {
     //move bar1 to bar2's position
-    let bar1Done = false;
-    let bar2Done = false;
+    let container = document.getElementById('array-container');
+    let bars = container.children;
+    //the positions array contains the x-values of each bar slot on the rendered page via getBoundingClientRect
+    let positions = getBarPositions();
+    let bar1 = bars[index1];
+    let bar2 = bars[index2];
+    bar1pos = positions[index1];
+    bar2pos = positions[index2];
+    bar2NextSibling = bar2.nextSibling;
+
+    //insert bar2 before bar1
+    container.insertBefore(bar2, bar1);
+    //insert bar1 before bar2's next sibling
+    container.insertBefore(bar1, bar2NextSibling);
+    //They are now swapped in the DOM, but the position is absolute so we need to swap their x values
+
+    
     anime({
         targets: bar1,
-        left: positions[moves[i].index2],
+        left: bar2pos,
         duration: animationDuration,
         easing: 'easeInOutQuad',
-        complete: () => {
-            bar1Done = true;
-        }
     });
     //move bar2 to bar1's position
     anime({
         targets: bar2,
-        left: positions[moves[i].index1],
+        left: bar1pos,
         duration: animationDuration,
         easing: 'easeInOutQuad',
-        complete: () => {
-            bar2Done = true;
-        }
     });
-    //wait until both animations are done
-    bar1.before(bar2);
+
+
 
 }
 
