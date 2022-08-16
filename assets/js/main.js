@@ -1,6 +1,6 @@
 /* -------------------------------- Constants ------------------------------- */
 const arrayMaxHeight = 500;
-const animationDuration = 250;
+let animationDuration = 200;
 let arraySize = 15;
 /* -------------------------------------------------------------------------- */
 /*                             Building the Array                             */
@@ -66,7 +66,9 @@ function getBarPositions() {
     return positions;
 }
 /* ---------- Move bars back to their original positions in the DOM --------- */
-function resetBars(bars, container) {
+function resetBars() {
+    container = document.getElementById('array-container');
+    bars = container.children;
     for (let i = 0; i < bars.length; i++) {
         //bar with a original-pos of i
         let ithBar = document.querySelector(`[original-pos="${i}"]`);
@@ -113,17 +115,19 @@ const bubbleSort = () => {
         }
     } while (swapped);
     //move the bars to their original positions
-    for (let i = 0; i < bars.length; i++) {
-        //bar with a original-pos of i
-        let ithBar = document.querySelector(`[original-pos="${i}"]`);
-        //move ithBar to the start of the array
-        container.insertBefore(ithBar, bars.firstChild);
-    }
+    resetBars();
 
     return moves;
 }
 
 /* ----------------------------- Insertion Sort ----------------------------- */
+
+/*
+*   For each element, swap the element backwards in the array until it is in the correct position
+*   Insertion sort worst case is O(n^2)
+*   Insertion sort average case is O(n^2)
+*   Insertion sort best case is O(n)   
+*/
 const insertionSort = () => {
     let container = document.getElementById('array-container');
     let bars = container.children;
@@ -131,30 +135,29 @@ const insertionSort = () => {
     let moves = [];
     //iterate over each element in the array
     for (let i = 0; i < len; i++) {
-        for (let j = i; j > 0; j--) {
-            //bar 1 is the j'th bar
-            let bar1 = bars[j];
-            let bar2 = bars[j - 1];
-            if (bar1.offsetHeight < bar2.offsetHeight) {
-                moves.push({ 'type': 'swap', 'index1': j, 'index2': j - 1 });
-                bar1.before(bar2);
-            }
+        //j is the index of the bar to be inserted
+        let j = i;
+        //while j is greater than 0 and the bar to the left is greater than the bar to the right
+        while (j > 0 && bars[j - 1].offsetHeight > bars[j].offsetHeight) {
+            moves.push({ 'type': 'swap', 'index1': j - 1, 'index2': j });
+            swapBarsInDom(j - 1, j);
+            j--;
         }
-
-
-
     }
     //move the bars to their original positions
-    for (let i = 0; i < bars.length; i++) {
-        //bar with a original-pos of i
-        let ithBar = document.querySelector(`[original-pos="${i}"]`);
-        //move ithBar to the start of the array
-        container.insertBefore(ithBar, bars.firstChild);
-    }
+    resetBars();
     return moves;
 }
 
 /* ----------------------------- Selection sort ----------------------------- */
+/*
+*   Find the smallest element in an array and swap it with the leftmost element
+*   Selection sort worst case: O(n^2)
+*   Selection sort average case: O(n^2)
+*   Selection sort best case: O(n^2)
+*   Container is the div holding the bars
+*   @return {array} - an array of moves required to sort the array
+*/
 const selectionSort = () => {
     let container = document.getElementById('array-container');
     let bars = container.children;
@@ -176,18 +179,220 @@ const selectionSort = () => {
         }
         //move the bars to their original positions
     }
-    resetBars(bars, container);
+    resetBars();
     return moves;
 
 }
 
+/* -------------------------------- QuickSort ------------------------------- */
+/*
+*   Divide the array into two parts, one with smaller elements and one with larger elements
+*   Recursively sort the two parts
+*   Quick sort worst case: O(n^2)
+*   Quick sort average case: O(n log n)
+*   Quick sort best case: O(n log n)
+*   @param {HTMLCollection} - the bars in the array
+*   @return {array} - an array of moves required to sort the array
+*/
+let moves = [];
+const executeQuickSort = () => {
+    let container = document.getElementById('array-container');
+    let bars = container.children;
+    let len = bars.length;
+    //bars to array to simplify the code.
+    let barsArray = Array.from(bars).map(bar => bar.offsetHeight);
+    //recursively sort the array
+    array = quickSort(barsArray, 0);
+    //move the bars to their original positions
+    console.log(array)
+    resetBars();
+    return moves;
+}
 
+/*
+*   @param {array} - the array to be sorted
+*   @return {array} - an array of moves required to sort the array
+*/
+
+const quickSort = (array, offset) => {
+    //if array is length 1, return it
+    if (array.length <= 1) {
+        return array;
+    }
+    //pick the first element as the pivot
+    let pivot = array[0];
+    console.log(pivot)
+    //sort the array in-place
+    //create markers i and j
+    i = 1;
+    j = array.length - 1;
+    //while i is less than j
+    while (i < j && j >= 0 && i >= 0) {
+        //increment i until the element is greater than the pivot
+        while (array[i] < pivot) {
+            i++;
+        }
+        //decrement j until the element is less than the pivot
+        while (array[j] > pivot) {
+            j--;
+        }
+        //swapin array elements at i and j
+        if (i < j) {
+            moves.push({ 'type': 'swap', 'index1': i, 'index2': j });
+            swapInArray(i, j);
+
+        } else {
+            //if i is equal to j, increment i
+            i++;
+        }
+
+
+
+    }
+    //recursively sort the left and right parts of the array
+    let left = quickSort(array.slice(0, i), offset);
+    let right = quickSort(array.slice(i), offset + i);
+    //return the concatenated left and right arrays
+    return left.concat(pivot, right);
+    return array;
+
+
+}
+
+const swapInArray = (array, index1, index2) => {
+    let temp = array[index1];
+    array[index1] = array[index2];
+    array[index2] = temp;
+}
+
+/* -------------------------------- Heap sort ------------------------------- */
+
+const executeHeapSort = () => {
+    let container = document.getElementById('array-container');
+    let bars = container.children;
+    let len = bars.length;
+    //bars to array to simplify the code.
+    let barsArray = Array.from(bars).map(bar => bar.offsetHeight);
+    //recursively sort the array
+    array = heapSort(barsArray, 0);
+    //move the bars to their original positions
+    resetBars();
+    return moves;
+}
+
+const heapSort = (array, offset) => {
+    //if array is length 1, return it
+    if (array.length <= 1) {
+        return array;
+    }
+    //create a heap
+    heapify(array);
+    //sort the array in-place
+    //create markers i and j
+    i = array.length - 1;
+    j = 0;
+    //while i is greater than 0
+    while (i > 0) {
+        //swap the first element with the last element
+        moves.push({ 'type': 'swap', 'index1': 0, 'index2': i });
+        swapInArray(0, i);
+        //decrement i
+        i--;
+        //heapify the array
+        heapify(array);
+    }
+    return moves;
+}
+
+const heapify = (array, index) => {
+    //create markers i and j
+    i = index;
+    j = 2 * i + 1;
+    //while j is less than the length of the array
+    while (j < array.length) {
+        //if j + 1 is less than the length of the array and the element at j is less than the element at j + 1
+        if (j + 1 < array.length && array[j] < array[j + 1]) {
+            //increment j
+            j++;
+        }
+        //if the element at i is less than the element at j
+        if (array[i] < array[j]) {
+            //swap the element at i with the element at j
+            moves.push({ 'type': 'swap', 'index1': i, 'index2': j });
+            swapInArray(i, j);
+            //set i to j
+            i = j;
+            //set j to 2 * i + 1
+            j = 2 * i + 1;
+        } else {
+            //break out of the loop
+            break;
+        }
+    }
+}
+
+
+/* ------------------------------- Merge Sort ------------------------------- */
+/*
+*   Recursively splits the array into two halves, then merges them back together in sorted order
+*   Time Complexity: O(n log n)
+*   Space Complexity: O(n)
+*   @param {HTMLCollection} bars - the bars to be sorted
+*   @returns {HTMLCollection} - the sorted bars
+*/
+const mergeSort = (bars) => {
+    //if the array is less than 2 elements, return it
+    if (bars.length < 2) {
+        return bars;
+    }
+    //split the array in half
+    let mid = Math.floor(bars.length / 2);
+    let left, right;
+    //let left and right equal splitDOMchildrenAtIndex()
+    [left, right] = splitDOMchildrenAtIndex(bars, mid);
+    //recursively call mergeSort on left and right
+    let sortedLeft = mergeSort(left);
+    let sortedRight = mergeSort(right);
+    //return the merged array
+    return merge(sortedLeft, sortedRight);
+}
+
+/* -------------------------- Merge sort utilities -------------------------- */
+
+/*
+*   Merge two sorted arrays into one sorted array
+*   @param {HTMLCollection} left - the left array
+*   @param {HTMLCollection} right - the right array
+*   @return {HTMLCollection} - the merged array
+*/
+const merge = (left, right) => {
+
+}
+
+const splitDOMchildrenAtIndex = (bars, index) => {
+    //iterate over bars and log their original positions
+    let left = [];
+    let right = [];
+    let length = bars.length;
+    for (let i = 0; i < bars.length; i++) {
+        if (i < index) {
+            left.push(bars[i]);
+        } else {
+            right.push(bars[i]);
+        }
+    }
+
+    //move left bars left and right bars right
+    return [left, right];
+
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                 Animations                                 */
 /* -------------------------------------------------------------------------- */
 
 function animateSort(type) {
+    moves = [];
     switch (type) {
         case 'bubble':
             moves = bubbleSort();
@@ -197,6 +402,15 @@ function animateSort(type) {
             break;
         case 'selection':
             moves = selectionSort();
+            break;
+        case 'quick':
+            moves = executeQuickSort();
+            break;
+        case 'merge':
+            moves = mergeSort();
+            break;
+        case 'heap':
+            moves = executeHeapSort();
             break;
         default:
             console.log('No sort type selected');
@@ -256,23 +470,21 @@ const animateBarSwap = (index1, index2) => {
 /* -------------------------------------------------------------------------- */
 /*                                  Main code                                 */
 /* -------------------------------------------------------------------------- */
+//main function
+const main = () => {
+    createBarArray(15);
 
-createBarArray(15);
-
-
-var slider = document.getElementById("sizeSlider");
-//var output = document.getElementById("demo");
-//output.innerHTML = slider.value; // Display the default slider value
-
-// Update the current slider value (each time you drag the slider handle)
-slider.oninput = function () {
-    //set array size to the value of the slider as an integer
-    arraySize = parseInt(this.value);
-    createBarArray(this.value);
+    var sizeSlider = document.getElementById("size-slider");
+    sizeSlider.oninput = function () {
+        arraySize = parseInt(this.value);
+        createBarArray(this.value);
+    }
+    var speedSlider = document.getElementById("speed-slider");
+    speedSlider.oninput = function () {
+        animationDuration = 300 - parseInt(this.value);
+    }
 }
-
-
-
+document.addEventListener('DOMContentLoaded', main);
 
 
 

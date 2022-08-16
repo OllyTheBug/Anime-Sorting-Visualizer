@@ -22,15 +22,20 @@
                     <p>Nobody asked for</p>
                     <hr>
                 </div>
-                <div class="slidecontainer">
+                <div class="size-container">
                     <h3 style="margin-top:10px; padding:0px;">Size:</h3>
-                    <input type="range" style="margin:0px; padding:0px;" min="1" max="100" value="50" class="slider" id="sizeSlider">
+                    <input type="range" style="margin:0px; padding:0px;" min="1" max="100" value="50" class="slider" id="size-slider">
+                </div>
+                <div class="speed-container">
+                    <h3 style="margin-top:10px; padding:0px;">Speed:</h3>
+                    <input type="range" style="margin:0px; padding:0px;" min="100" max="250" value="200" class="slider" id="speed-slider">
                 </div>
                 <span class="stack button" onclick="createBarArray()">Generate Array</span>
                 <span class="stack button" onclick="animateSort('bubble')">Bubble Sort</span>
                 <span class="stack button" onclick="animateSort('selection')">Selection Sort</span>
-                <span class="stack button"></span>
-                <span class="stack button"></span>
+                <span class="stack button" onclick="animateSort('insertion')">Insertion Sort</span>
+                <span class="stack button" onclick="animateSort('quick')"> Quicksort</span>
+                <span class="stack button" onclick="animateSort('heap')">Heap Sort</span>
             </div>
         </div>
         <div id="array-container"></div>
