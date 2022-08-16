@@ -215,45 +215,11 @@ const executeQuickSort = () => {
 */
 
 const quickSort = (array, offset) => {
-    //if array is length 1, return it
-    if (array.length <= 1) {
-        return array;
-    }
-    //pick the first element as the pivot
-    let pivot = array[0];
-    console.log(pivot)
-    //sort the array in-place
-    //create markers i and j
-    i = 1;
-    j = array.length - 1;
-    //while i is less than j
-    while (i < j && j >= 0 && i >= 0) {
-        //increment i until the element is greater than the pivot
-        while (array[i] < pivot) {
-            i++;
-        }
-        //decrement j until the element is less than the pivot
-        while (array[j] > pivot) {
-            j--;
-        }
-        //swapin array elements at i and j
-        if (i < j) {
-            moves.push({ 'type': 'swap', 'index1': i, 'index2': j });
-            swapInArray(i, j);
-
-        } else {
-            //if i is equal to j, increment i
-            i++;
-        }
-
-
-
-    }
-    //recursively sort the left and right parts of the array
-    let left = quickSort(array.slice(0, i), offset);
-    let right = quickSort(array.slice(i), offset + i);
-    //return the concatenated left and right arrays
-    return left.concat(pivot, right);
+    console.log('array', array, 'offset', offset, 'array.length', array.length);
+    //quicksort the array if the array has more than one element
+    //pick a pivot, then find the first element from the left that is greater than the pivot
+    //find the first element from the right that is less than the pivot
+    //swap the lesser and greater elements
     return array;
 
 
