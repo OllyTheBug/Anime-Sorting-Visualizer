@@ -384,19 +384,44 @@ const splitDOMchildrenAtIndex = (bars, index) => {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                                  Controls                                  */
+/* -------------------------------------------------------------------------- */
+const setSortButtonClickListeners = () => {
+    let sortButtons = document.getElementsByClassName('sortbutton');
+    for (let i = 0; i < sortButtons.length; i++) {
+        sortButtons[i].addEventListener('click', handleSortButton);
+    }
+}
+
+const lockAllSortButtons = () => {
+    let sortButtons = document.getElementsByClassName('sortbutton');
+    for (let i = 0; i < sortButtons.length; i++) {
+        sortButtons[i].disabled = true;
+        //disable click event listener
+        sortButtons[i].removeEventListener('click', handleSortButton);
+    }
+}
+
+const unlockAllSortButtons = () => {
+    let sortButtons = document.getElementsByClassName('sortbutton');
+    for (let i = 0; i < sortButtons.length; i++) {
+        sortButtons[i].disabled = false;
+    }
+    setSortButtonClickListeners();
+
+}
+
+function handleSortButton(event){
+    //lock all sort buttons
+    lockAllSortButtons();
+    //call animateSort, pasing the id of the button that was clicked
+    animateSort(event.target.id);
+}
+/* -------------------------------------------------------------------------- */
 /*                                 Animations                                 */
 /* -------------------------------------------------------------------------- */
 
-function handleSortButton(type){
-    //get all .sortbutton elements
-    let buttons = document.getElementsByClassName('sortbutton');
-    //disable all .sortbutton elements
-    for (let i = 0; i < buttons.length; i++) {
-        buttons[i].disabled = true;
-        buttons[i].classList.add('disabled');
 
-    }
-}
 
 function animateSort(type) {
     moves = [];
@@ -422,7 +447,8 @@ function animateSort(type) {
         default:
             console.log('No sort type selected');
     }
-
+    //append a 'done' move to the end of the moves array
+    moves.push({ 'type': 'done' });
     animateMovesList(moves);
 
 }
@@ -437,6 +463,11 @@ function animateMovesList(moves) {
                     animateBarSwap(index1, index2);
                 }, i * 1.5 * animationDuration);
                 break;
+            case 'done':
+                setTimeout(() => {
+                    unlockAllSortButtons();
+                }
+                    , i * 1.5 * animationDuration);
         }
     }
     return true;
@@ -482,7 +513,7 @@ const animateBarSwap = (index1, index2) => {
 //main function
 const main = () => {
     createBarArray(15);
-
+    setSortButtonClickListeners();
     var sizeSlider = document.getElementById("size-slider");
     sizeSlider.oninput = function () {
         arraySize = parseInt(this.value);
