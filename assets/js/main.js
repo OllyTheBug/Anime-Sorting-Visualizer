@@ -57,14 +57,13 @@ const getColor = (value) => {
 /* -------------------------------------------------------------------------- */
 
 /* ---------------------------- Get bar positions --------------------------- */
-function getBarPositions() {
-    let bars = document.getElementById('array-container').children;
-    let positions = [];
-    for (let i = 0; i < bars.length; i++) {
-        positions.push(bars[i].getBoundingClientRect().x);
-    }
-    return positions;
+function getBarPosInContainer(index, container) {
+    let bars = container.children;
+    
+    return bars[index].getBoundingClientRect().x;
 }
+
+
 /* ---------- Move bars back to their original positions in the DOM --------- */
 function resetBars() {
     container = document.getElementById('array-container');
@@ -468,29 +467,30 @@ const animateBarSwap = (index1, index2) => {
     let container = document.getElementById('array-container');
     let bars = container.children;
     //the positions array contains the x-values of each bar slot on the rendered page via getBoundingClientRect
-    let positions = getBarPositions();
     let bar1 = bars[index1];
     let bar2 = bars[index2];
-    bar1pos = positions[index1];
-    bar2pos = positions[index2];
-    swapBarsInDom(index1, index2);
+    bar1pos = getBarPosInContainer(index1, container);
+    bar2pos = getBarPosInContainer(index2, container);
+    
     //They are now swapped in the DOM, but the position is absolute so we need to swap their x values
 
     //move bar1 to bar2's position
     anime({
         targets: bar1,
-        left: bar2pos,
+        //translatex
+        translateX: [0, 100],
         duration: animationDuration,
         easing: 'easeInOutQuad',
     });
-    //move bar2 to bar1's position
+    // move bar2 to bar1's position
     anime({
         targets: bar2,
-        left: bar1pos,
+        translateX: [0, -100],
         duration: animationDuration,
         easing: 'easeInOutQuad',
+        complete: () => {swapBarsInDom(index1, index2);}
     });
-
+    
 
 
 }
