@@ -202,7 +202,7 @@ const executeQuickSort = () => {
     //bars to array to simplify the code.
     let barsArray = Array.from(bars).map(bar => bar.offsetHeight);
     //recursively sort the array
-    array = quickSort(barsArray, 0);
+    array = quickSort(barsArray, 0, len - 1);
     //move the bars to their original positions
     console.log(array)
     resetBars();
@@ -214,15 +214,45 @@ const executeQuickSort = () => {
 *   @return {array} - an array of moves required to sort the array
 */
 
-const quickSort = (array, offset) => {
-    console.log('array', array, 'offset', offset, 'array.length', array.length);
-    //quicksort the array if the array has more than one element
-    //pick a pivot, then find the first element from the left that is greater than the pivot
-    //find the first element from the right that is less than the pivot
-    //swap the lesser and greater elements
+const quickSort = (array, low, high) => {
+    //if low isn't defined, set it to 0
+    if (low < high) {
+        let pivot = partition(array, low, high);
+        quickSort(array, low, pivot - 1);
+        quickSort(array, pivot + 1, high);
+    }
+
     return array;
 
 
+}
+const partition = (array, low, high) => {
+    //define the last element as the pivot
+    let pivot = array[high];
+    //define the index of the smaller element, initialized to the low index - 1
+    let i = (low - 1);
+    //iterate over the array from the low index to the high index
+    for (let j = low; j <= high; j++) {
+        //if the j'th element is smaller than the pivot
+        if (array[j] < pivot) {
+            //increment the index of the smaller element
+            i++;
+            //swap the j'th element with the smaller element
+            swapInArray(array, i, j);
+            //add a move to the array of moves
+            if (i !== j) {
+                moves.push({ 'type': 'swap', 'index1': i, 'index2': j });
+            }
+        }
+
+    }
+    //swap the last element with the smaller element
+    swapInArray(array, i + 1, high);
+    //add a move to the array of moves
+    if (i + 1 !== high) {
+        moves.push({ 'type': 'swap', 'index1': i + 1, 'index2': high });
+    }
+    return (i + 1);
 }
 
 const swapInArray = (array, index1, index2) => {
@@ -357,6 +387,17 @@ const splitDOMchildrenAtIndex = (bars, index) => {
 /*                                 Animations                                 */
 /* -------------------------------------------------------------------------- */
 
+function handleSortButton(type){
+    //get all .sortbutton elements
+    let buttons = document.getElementsByClassName('sortbutton');
+    //disable all .sortbutton elements
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].disabled = true;
+        buttons[i].classList.add('disabled');
+
+    }
+}
+
 function animateSort(type) {
     moves = [];
     switch (type) {
@@ -383,6 +424,7 @@ function animateSort(type) {
     }
 
     animateMovesList(moves);
+
 }
 
 function animateMovesList(moves) {
@@ -393,10 +435,11 @@ function animateMovesList(moves) {
                     let index1 = moves[i].index1;
                     let index2 = moves[i].index2;
                     animateBarSwap(index1, index2);
-                }, i * 2 * animationDuration);
+                }, i * 1.5 * animationDuration);
                 break;
         }
     }
+    return true;
 }
 
 /* ------------ Swap two bars in the array-container and animate ------------ */

@@ -6,8 +6,11 @@
 
 #control-and-array {
     width: 75vw;
-    margin:auto;
+    margin:
+    auto;
     margin-top: 10vh;
+    border-left: solid 2px #dbdbdb!important;
+    padding-left: 10px!important;
 }
 
 .array-container {
