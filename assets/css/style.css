@@ -31,10 +31,11 @@
 }
 
 .bar {
-    position: relative;
+    /* position: relative; */
     border: solid black 1px;
     margin: 0;
-    float:left;
+    float:
+    left;
     background-color: cornflowerblue;
     padding: 0;
     /* transition: left 1s; */

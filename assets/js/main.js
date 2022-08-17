@@ -469,8 +469,8 @@ const animateBarSwap = (index1, index2) => {
     //the positions array contains the x-values of each bar slot on the rendered page via getBoundingClientRect
     let bar1 = bars[index1];
     let bar2 = bars[index2];
-    bar1pos = getBarPosInContainer(index1, container);
-    bar2pos = getBarPosInContainer(index2, container);
+    let bar1pos = getBarPosInContainer(index1, container);
+    let bar2pos = getBarPosInContainer(index2, container);
     
     //They are now swapped in the DOM, but the position is absolute so we need to swap their x values
 
@@ -478,18 +478,31 @@ const animateBarSwap = (index1, index2) => {
     anime({
         targets: bar1,
         //translatex
-        translateX: [0, 100],
+        translateX: [0, bar2pos-bar1pos],
         duration: animationDuration,
         easing: 'easeInOutQuad',
+        complete: () => {
+            bar1.style.transform = 'translateX(0)';
+        }
     });
     // move bar2 to bar1's position
     anime({
         targets: bar2,
-        translateX: [0, -100],
+        translateX: [0, bar1pos-bar2pos],
         duration: animationDuration,
         easing: 'easeInOutQuad',
-        complete: () => {swapBarsInDom(index1, index2);}
+        complete: () => {
+            bar2.style.transform = 'translateX(0)';
+            swapBarsInDom(index1, index2)
+        }
+
     });
+    //swap the bars in the array and remove translation
+
+
+    
+    //remove translation from style
+    
     
 
 
