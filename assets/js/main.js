@@ -25,8 +25,8 @@ const createBarArray = () => {
     let width = (container.offsetWidth / len) - 1;
     for (let i = 0; i < len; i++) {
         let bar = createBar(arr[i], i, width, arr[i]);
-        //set bar's left to i * width
-        bar.style.left = i * width + 600 + 'px';
+        //set bar's left to i * width (only if using absolute positioning)
+        //bar.style.left = i * width + 600 + 'px';
         container.appendChild(bar);
     }
 }
@@ -337,20 +337,10 @@ const heapify = (array, index) => {
 *   @returns {HTMLCollection} - the sorted bars
 */
 const mergeSort = (bars) => {
-    //if the array is less than 2 elements, return it
-    if (bars.length < 2) {
-        return bars;
-    }
-    //split the array in half
-    let mid = Math.floor(bars.length / 2);
-    let left, right;
-    //let left and right equal splitDOMchildrenAtIndex()
-    [left, right] = splitDOMchildrenAtIndex(bars, mid);
-    //recursively call mergeSort on left and right
-    let sortedLeft = mergeSort(left);
-    let sortedRight = mergeSort(right);
-    //return the merged array
-    return merge(sortedLeft, sortedRight);
+
+    
+    return bars;
+
 }
 
 /* -------------------------- Merge sort utilities -------------------------- */
@@ -366,7 +356,6 @@ const merge = (left, right) => {
 }
 
 const splitDOMchildrenAtIndex = (bars, index) => {
-    //iterate over bars and log their original positions
     let left = [];
     let right = [];
     let length = bars.length;
@@ -411,7 +400,7 @@ const unlockAllSortButtons = () => {
 
 }
 
-function handleSortButton(event){
+function handleSortButton(event) {
     //lock all sort buttons
     lockAllSortButtons();
     //call animateSort, pasing the id of the button that was clicked
@@ -513,6 +502,8 @@ const animateBarSwap = (index1, index2) => {
 //main function
 const main = () => {
     createBarArray(15);
+
+
     setSortButtonClickListeners();
     var sizeSlider = document.getElementById("size-slider");
     sizeSlider.oninput = function () {

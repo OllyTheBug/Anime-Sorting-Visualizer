@@ -31,7 +31,7 @@
 }
 
 .bar {
-    position: absolute;
+    position: relative;
     border: solid black 1px;
     margin: 0;
     float:left;
