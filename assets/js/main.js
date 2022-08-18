@@ -391,7 +391,7 @@ const executeMergeSort = () => {
     //bars to array to simplify the code.
     let barsArray = Array.from(bars).map(bar => bar.offsetHeight);
     //recursively sort the array
-    array = mergeSort(barsArray);
+    array = mergeSort(barsArray, 0, len - 1, '');
     return moves;
 }
 
@@ -402,21 +402,24 @@ const executeMergeSort = () => {
 *   @param {HTMLCollection} bars - the bars to be sorted
 *   @returns {HTMLCollection} - the sorted bars
 */
-const mergeSort = (array) => {
+const mergeSort = (array, start, end, branch) => {
+    console.log(array.slice(start, end + 1), branch);
     //if the array is length 1, return it
-    if (array.length <= 1) {
+    if (start === end) {
         return array;
     }
-    //split the array into two halves
-    let left = array.slice(0, Math.floor(array.length / 2));
-    let right = array.slice(Math.floor(array.length / 2));
+    
+    //split the array in half
+    let mid = Math.floor((start + end) / 2);
     //add a move to the array of moves
-    moves.push({ 'type': 'split'});
-    //recursively sort the two halves
-    left = mergeSort(left);
-    right = mergeSort(right);
+    moves.push({ 'type': 'split', 'index': mid });
+    //recursively sort the left half
+    mergeSort(array, start, mid, branch+'l');
+    //recursively sort the right half
+    mergeSort(array, mid + 1, end, branch+'r');
     //merge the two halves back together in sorted order
-    return merge(left, right);
+    merge(array, start, mid, end, branch);
+    
 
 }
 
@@ -428,25 +431,38 @@ const mergeSort = (array) => {
 *   @param {HTMLCollection} right - the right array
 *   @return {HTMLCollection} - the merged array
 */
-const merge = (left, right) => {
-
-}
-
-const splitDOMchildrenAtIndex = (bars, index) => {
-    let left = [];
-    let right = [];
-    let length = bars.length;
-    for (let i = 0; i < bars.length; i++) {
-        if (i < index) {
-            left.push(bars[i]);
+const merge = (array, start, mid, end, branch) => {
+    //create markers i and j
+    i = start;
+    j = mid + 1;
+    //while i is less than or equal to mid and j is less than or equal to end
+    while (i <= mid && j <= end) {
+        //if the element at i is less than the element at j
+        if (array[i] <= array[j]) {
+            //increment i
+            i++;
         } else {
-            right.push(bars[i]);
+            //insert the element at j into the array at i
+            moves.push({ 'type': 'insert', 'index': i, 'value': array[j] });
+            insertInArray(array, i, array[j]);
+            //increment i and j
+            i++;
+            j++;
+            mid++;
         }
     }
+    return array;
+}
 
-    //move left bars left and right bars right
-    return [left, right];
-
+const insertInArray = (array, index, value) => {
+    //create a temp array to hold the elements after the index
+    let temp = array.slice(index);
+    //set the element at index to value
+    array[index] = value;
+    //loop through the temp array and insert the elements into the array
+    for (let i = 0; i < temp.length; i++) {
+        array[index + i + 1] = temp[i];
+    }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -593,8 +609,7 @@ const animateBarSwap = (index1, index2) => {
 //main function
 const main = () => {
     createBarArray(15);
-    let bars = getOuterContainer().children;
-    splitArrayContainer(bars, 4);
+    executeMergeSort();
 
     setSortButtonClickListeners();
     var sizeSlider = document.getElementById("size-slider");
