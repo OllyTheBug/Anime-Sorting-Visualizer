@@ -17,7 +17,7 @@ const generateRandomArray = (length, min, max) => {
 /* ----------------- fill #array-container with random bars ----------------- */
 const createBarArray = () => {
     let length = arraySize;
-    let container = document.getElementById('array-container');
+    let container = getOuterContainer();
     let arr = generateRandomArray(length, 0, arrayMaxHeight);
     const len = arr.length;
     container.innerHTML = '';
@@ -57,16 +57,21 @@ const getColor = (value) => {
 /* -------------------------------------------------------------------------- */
 
 /* ---------------------------- Get bar positions --------------------------- */
+const getOuterContainer = () => {
+    container = document.getElementById('outer-container');
+    return container;
+}
+
 function getBarPosInContainer(index, container) {
     let bars = container.children;
-    
+
     return bars[index].getBoundingClientRect().x;
 }
 
 
 /* ---------- Move bars back to their original positions in the DOM --------- */
 function resetBars() {
-    container = document.getElementById('array-container');
+    container = getOuterContainer();
     bars = container.children;
     for (let i = 0; i < bars.length; i++) {
         //bar with a original-pos of i
@@ -77,7 +82,7 @@ function resetBars() {
 }
 
 function swapBarsInDom(index1, index2) {
-    container = document.getElementById('array-container');
+    container = getOuterContainer();
     bars = container.children;
     let bar1 = bars[index1];
     let bar2 = bars[index2];
@@ -87,13 +92,64 @@ function swapBarsInDom(index1, index2) {
     //insert bar1 before bar2's next sibling
     container.insertBefore(bar1, bar2NextSibling);
 }
+
+
+/*
+* @param {HTMLCollcetion} bars - the array of bars to be split
+* @param {number} index - where the array should be split
+*/
+const splitArrayContainer = (bars, index) => {
+    //create two HTML div elements to hold the two halves of the array
+    let left = document.createElement('div');
+    let right = document.createElement('div');
+    //add array-container class to the two new div elements
+    left.classList.add('array-container', 'card');
+    right.classList.add('array-container', 'card');
+    //get height and width
+    let barWidth = bars[0].offsetWidth;
+    let maxHeight = 0;
+    //move the first half of the array to the left div
+    for (let i = 0; i < index; i++) {
+        console.log(i)
+
+        if (bars[i].offsetHeight > maxHeight) {
+            maxHeight = bars[i].offsetHeight;
+        }
+        left.appendChild(bars[i]);
+    }
+    //move the second half of the array to the right div
+    for (let i = index; i < bars.length; i++) {
+        if (bars[i].offsetHeight > maxHeight) {
+            maxHeight = bars[i].offsetHeight;
+        }
+        right.appendChild(bars[i]);
+    }
+    //set the width of each div based on the number of bars in the array
+    let totalBars = bars.length;
+    let leftWidth = (left.offsetWidth / totalBars) * barWidth - 1;
+    let rightWidth = (right.offsetWidth / totalBars) * barWidth - 1;
+
+    console.log("hmm");
+    //get the parent node
+    let parent = bars[0].parentNode;
+    parent.innerHTML = '';
+    //add the bars to #array-container
+    left.style.width = `50%`;
+    left.style.height = `${maxHeight}px`;
+    right.style.width = `50%`;
+    right.style.height = `${maxHeight}px`;
+    parent.appendChild(left);
+    parent.appendChild(right);
+
+}
+
 /* -------------------------------------------------------------------------- */
 /*                             Sorting algorithms                             */
 /* -------------------------------------------------------------------------- */
 
 /* ------------------------------- Bubble sort ------------------------------ */
 const bubbleSort = () => {
-    let container = document.getElementById('array-container');
+    let container = getOuterContainer();
     let bars = container.children;
     let len = bars.length;
     let moves = [];
@@ -128,7 +184,7 @@ const bubbleSort = () => {
 *   Insertion sort best case is O(n)   
 */
 const insertionSort = () => {
-    let container = document.getElementById('array-container');
+    let container = getOuterContainer();
     let bars = container.children;
     let len = bars.length;
     let moves = [];
@@ -158,11 +214,10 @@ const insertionSort = () => {
 *   @return {array} - an array of moves required to sort the array
 */
 const selectionSort = () => {
-    let container = document.getElementById('array-container');
+    let container = getOuterContainer();
     let bars = container.children;
     let len = bars.length;
     let moves = [];
-    //iterate over each element in the array
     for (let i = 0; i < len; i++) {
         let min = i;
         for (let j = i + 1; j < len; j++) {
@@ -195,7 +250,7 @@ const selectionSort = () => {
 */
 let moves = [];
 const executeQuickSort = () => {
-    let container = document.getElementById('array-container');
+    let container = getOuterContainer();
     let bars = container.children;
     let len = bars.length;
     //bars to array to simplify the code.
@@ -263,7 +318,7 @@ const swapInArray = (array, index1, index2) => {
 /* -------------------------------- Heap sort ------------------------------- */
 
 const executeHeapSort = () => {
-    let container = document.getElementById('array-container');
+    let container = getOuterContainer();
     let bars = container.children;
     let len = bars.length;
     //bars to array to simplify the code.
@@ -337,7 +392,7 @@ const heapify = (array, index) => {
 */
 const mergeSort = (bars) => {
 
-    
+
     return bars;
 
 }
@@ -464,21 +519,21 @@ function animateMovesList(moves) {
 /* ------------ Swap two bars in the array-container and animate ------------ */
 const animateBarSwap = (index1, index2) => {
     //move bar1 to bar2's position
-    let container = document.getElementById('array-container');
+    let container = getOuterContainer();
     let bars = container.children;
     //the positions array contains the x-values of each bar slot on the rendered page via getBoundingClientRect
     let bar1 = bars[index1];
     let bar2 = bars[index2];
     let bar1pos = getBarPosInContainer(index1, container);
     let bar2pos = getBarPosInContainer(index2, container);
-    
+
     //They are now swapped in the DOM, but the position is absolute so we need to swap their x values
 
     //move bar1 to bar2's position
     anime({
         targets: bar1,
         //translatex
-        translateX: [0, bar2pos-bar1pos],
+        translateX: [0, bar2pos - bar1pos],
         duration: animationDuration,
         easing: 'easeInOutQuad',
         complete: () => {
@@ -488,7 +543,7 @@ const animateBarSwap = (index1, index2) => {
     // move bar2 to bar1's position
     anime({
         targets: bar2,
-        translateX: [0, bar1pos-bar2pos],
+        translateX: [0, bar1pos - bar2pos],
         duration: animationDuration,
         easing: 'easeInOutQuad',
         complete: () => {
@@ -500,10 +555,10 @@ const animateBarSwap = (index1, index2) => {
     //swap the bars in the array and remove translation
 
 
-    
+
     //remove translation from style
-    
-    
+
+
 
 
 }
@@ -515,7 +570,8 @@ const animateBarSwap = (index1, index2) => {
 //main function
 const main = () => {
     createBarArray(15);
-
+    let bars = getOuterContainer().children;
+    splitArrayContainer(bars, 4);
 
     setSortButtonClickListeners();
     var sizeSlider = document.getElementById("size-slider");
