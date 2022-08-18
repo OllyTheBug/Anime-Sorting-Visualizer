@@ -383,6 +383,18 @@ const heapify = (array, index) => {
 
 
 /* ------------------------------- Merge Sort ------------------------------- */
+
+const executeMergeSort = () => {
+    let container = getOuterContainer();
+    let bars = container.children;
+    let len = bars.length;
+    //bars to array to simplify the code.
+    let barsArray = Array.from(bars).map(bar => bar.offsetHeight);
+    //recursively sort the array
+    array = mergeSort(barsArray);
+    return moves;
+}
+
 /*
 *   Recursively splits the array into two halves, then merges them back together in sorted order
 *   Time Complexity: O(n log n)
@@ -390,10 +402,21 @@ const heapify = (array, index) => {
 *   @param {HTMLCollection} bars - the bars to be sorted
 *   @returns {HTMLCollection} - the sorted bars
 */
-const mergeSort = (bars) => {
-
-
-    return bars;
+const mergeSort = (array) => {
+    //if the array is length 1, return it
+    if (array.length <= 1) {
+        return array;
+    }
+    //split the array into two halves
+    let left = array.slice(0, Math.floor(array.length / 2));
+    let right = array.slice(Math.floor(array.length / 2));
+    //add a move to the array of moves
+    moves.push({ 'type': 'split'});
+    //recursively sort the two halves
+    left = mergeSort(left);
+    right = mergeSort(right);
+    //merge the two halves back together in sorted order
+    return merge(left, right);
 
 }
 
@@ -482,7 +505,7 @@ function animateSort(type) {
             moves = executeQuickSort();
             break;
         case 'merge':
-            moves = mergeSort();
+            moves = executeMergeSort();
             break;
         case 'heap':
             moves = executeHeapSort();
