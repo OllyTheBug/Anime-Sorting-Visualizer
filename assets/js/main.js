@@ -36,7 +36,7 @@ const createBar = (value, key, width, height) => {
     bar.classList.add('bar');
     bar.setAttribute('original-pos', key);
     bar.style.height = height + 'px';
-    bar.style.width = width + 'px';
+    //bar.style.width = width + 'px';
     bar.style.backgroundColor = getColor(value);
     //bar.innerHTML = value;
     return bar;
