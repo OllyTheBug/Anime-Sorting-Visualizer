@@ -99,7 +99,7 @@ function swapBarsInDom(index1, index2) {
 * @param {number} index - where the array should be split
 */
 const splitArrayContainer = (container, index) => {
-    if (index === undefined){
+    if (index === undefined) {
         index = Math.floor(container.children.length / 2);
     }
     //create two HTML div elements to hold the two halves of the array
@@ -115,8 +115,6 @@ const splitArrayContainer = (container, index) => {
     let maxHeight = 0;
     //move the first half of the array to the left div
     for (let i = 0; i < index; i++) {
-        console.log(i)
-
         if (bars[0].offsetHeight > maxHeight) {
             maxHeight = bars[0].offsetHeight;
         }
@@ -134,7 +132,7 @@ const splitArrayContainer = (container, index) => {
     let leftWidth = (left.offsetWidth / totalBars) * barWidth - 1;
     let rightWidth = (right.offsetWidth / totalBars) * barWidth - 1;
 
-    console.log("hmm");;
+
     container.innerHTML = '';
     //add the bars to #array-container
     left.style.width = `50%`;
@@ -563,6 +561,12 @@ function animateMovesList(moves) {
                     animateBarSwap(index1, index2);
                 }, i * 1.5 * animationDuration);
                 break;
+
+            case 'split':
+                setTimeout(() => {
+                    let index = moves[i].index;
+                    splitArrayContainer(index);
+                })
             case 'done':
                 setTimeout(() => {
                     unlockAllSortButtons();
