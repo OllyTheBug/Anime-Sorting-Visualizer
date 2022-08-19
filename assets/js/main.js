@@ -98,8 +98,13 @@ function swapBarsInDom(index1, index2) {
 * @param {HTMLCollcetion} bars - the array of bars to be split
 * @param {number} index - where the array should be split
 */
-const splitArrayContainer = (bars, index) => {
+const splitArrayContainer = (container, index) => {
+    if (index === undefined){
+        index = Math.floor(container.children.length / 2);
+    }
     //create two HTML div elements to hold the two halves of the array
+    let bars = container.children;
+    let length = bars.length;
     let left = document.createElement('div');
     let right = document.createElement('div');
     //add array-container class to the two new div elements
@@ -112,34 +117,32 @@ const splitArrayContainer = (bars, index) => {
     for (let i = 0; i < index; i++) {
         console.log(i)
 
-        if (bars[i].offsetHeight > maxHeight) {
-            maxHeight = bars[i].offsetHeight;
+        if (bars[0].offsetHeight > maxHeight) {
+            maxHeight = bars[0].offsetHeight;
         }
-        left.appendChild(bars[i]);
+        left.appendChild(bars[0]);
     }
     //move the second half of the array to the right div
-    for (let i = index; i < bars.length; i++) {
-        if (bars[i].offsetHeight > maxHeight) {
-            maxHeight = bars[i].offsetHeight;
+    for (let i = index; i < length; i++) {
+        if (bars[0].offsetHeight > maxHeight) {
+            maxHeight = bars[0].offsetHeight;
         }
-        right.appendChild(bars[i]);
+        right.appendChild(bars[0]);
     }
     //set the width of each div based on the number of bars in the array
     let totalBars = bars.length;
     let leftWidth = (left.offsetWidth / totalBars) * barWidth - 1;
     let rightWidth = (right.offsetWidth / totalBars) * barWidth - 1;
 
-    console.log("hmm");
-    //get the parent node
-    let parent = bars[0].parentNode;
-    parent.innerHTML = '';
+    console.log("hmm");;
+    container.innerHTML = '';
     //add the bars to #array-container
     left.style.width = `50%`;
     left.style.height = `${maxHeight}px`;
     right.style.width = `50%`;
     right.style.height = `${maxHeight}px`;
-    parent.appendChild(left);
-    parent.appendChild(right);
+    container.appendChild(left);
+    container.appendChild(right);
 
 }
 
@@ -624,6 +627,10 @@ const animateBarSwap = (index1, index2) => {
 //main function
 const main = () => {
     createBarArray(13);
+
+    container = getOuterContainer();
+    splitArrayContainer(container);
+
 
     setSortButtonClickListeners();
     var sizeSlider = document.getElementById("size-slider");
