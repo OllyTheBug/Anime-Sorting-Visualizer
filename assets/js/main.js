@@ -403,23 +403,22 @@ const executeMergeSort = () => {
 *   @returns {HTMLCollection} - the sorted bars
 */
 const mergeSort = (array, start, end, branch) => {
-    console.log(array.slice(start, end + 1), branch);
     //if the array is length 1, return it
     if (start === end) {
-        return array;
+        return;
     }
-    
+
     //split the array in half
     let mid = Math.floor((start + end) / 2);
     //add a move to the array of moves
-    moves.push({ 'type': 'split', 'index': mid });
+    moves.push({ 'type': 'split', 'index': mid, 'branch': branch });
     //recursively sort the left half
-    mergeSort(array, start, mid, branch+'l');
+    mergeSort(array, start, mid, branch + 'l');
     //recursively sort the right half
-    mergeSort(array, mid + 1, end, branch+'r');
+    mergeSort(array, mid + 1, end, branch + 'r');
     //merge the two halves back together in sorted order
     merge(array, start, mid, end, branch);
-    
+
 
 }
 
@@ -435,24 +434,40 @@ const merge = (array, start, mid, end, branch) => {
     //create markers i and j
     i = start;
     j = mid + 1;
-    //while i is less than or equal to mid and j is less than or equal to end
+    //create a temporary array to hold the merged array
+    let temp = [];
+    //add a move to create the temporary array
+    moves.push({ 'type': 'merge', 'index': start, 'branch': branch });
     while (i <= mid && j <= end) {
-        //if the element at i is less than the element at j
-        if (array[i] <= array[j]) {
-            //increment i
+        if (array[i] < array[j]) {
+            //add the element at i to the temporary array
+            temp.push(array[i]);
+            //add a move to the array of moves
+            moves.push({ 'type': 'add', 'index': i, 'branch': branch });
             i++;
         } else {
-            //insert the element at j into the array at i
-            moves.push({ 'type': 'insert', 'index': i, 'value': array[j] });
-            insertInArray(array, i, array[j]);
-            //increment i and j
-            i++;
+            temp.push(array[j]);
+            moves.push({ 'type': 'add', 'index': j, 'branch': branch });
             j++;
-            mid++;
         }
     }
-    return array;
+    while (i <= mid) {
+        temp.push(array[i]);
+        moves.push({ 'type': 'add', 'index': i, 'branch': branch });
+        i++;
+    }
+    while (j <= end) {
+        temp.push(array[j]);
+        moves.push({ 'type': 'add', 'index': j, 'branch': branch });
+        j++;
+    }
+    //copy the temporary array back into the original array
+    for (let k = 0; k < temp.length; k++) {
+        array[start + k] = temp[k];
+    }
+    moves.push({ 'type': 'rejoin', 'branch': branch });
 }
+
 
 const insertInArray = (array, index, value) => {
     //create a temp array to hold the elements after the index
@@ -608,8 +623,7 @@ const animateBarSwap = (index1, index2) => {
 /* -------------------------------------------------------------------------- */
 //main function
 const main = () => {
-    createBarArray(15);
-    executeMergeSort();
+    createBarArray(13);
 
     setSortButtonClickListeners();
     var sizeSlider = document.getElementById("size-slider");
