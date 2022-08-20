@@ -98,7 +98,7 @@ function swapBarsInDom(index1, index2) {
 * @param {HTMLCollcetion} bars - the array of bars to be split
 * @param {number} index - where the array should be split
 */
-const splitArrayContainer = (container, index) => {
+const splitArrayContainer = (container, index, branch) => {
     if (index === undefined) {
         index = Math.floor(container.children.length / 2);
     }
@@ -107,6 +107,11 @@ const splitArrayContainer = (container, index) => {
     let length = bars.length;
     let left = document.createElement('div');
     let right = document.createElement('div');
+    //if branch is defined, set the id's to branch+l and branch+r
+    if (branch !== undefined) {
+        left.id = branch + 'l';
+        right.id = branch + 'r';
+    }
     //add array-container class to the two new div elements
     left.classList.add('array-container', 'card');
     right.classList.add('array-container', 'card');
@@ -565,7 +570,13 @@ function animateMovesList(moves) {
             case 'split':
                 setTimeout(() => {
                     let index = moves[i].index;
-                    splitArrayContainer(index);
+                    if (moves[i].branch === '') {
+                        container = getOuterContainer()
+                    }
+                    else {
+                        container = document.getElementById(moves[i].branch);
+                    }
+                    splitArrayContainer(container, moves[i].index, moves[i].branch);
                 })
             case 'done':
                 setTimeout(() => {
@@ -630,11 +641,7 @@ const animateBarSwap = (index1, index2) => {
 /* -------------------------------------------------------------------------- */
 //main function
 const main = () => {
-    createBarArray(13);
-
-    container = getOuterContainer();
-    splitArrayContainer(container);
-
+    createBarArray(15);
 
     setSortButtonClickListeners();
     var sizeSlider = document.getElementById("size-slider");
