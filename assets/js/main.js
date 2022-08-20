@@ -98,13 +98,17 @@ function swapBarsInDom(index1, index2) {
 * @param {HTMLCollcetion} bars - the array of bars to be split
 * @param {number} index - where the array should be split
 */
-const splitArrayContainer = (container, index, branch) => {
-    if (index === undefined) {
-        index = Math.floor(container.children.length / 2);
-    }
+const splitArrayContainer = (container, branch) => {
+
+    index = Math.floor(container.children.length / 2);
+
+
     //create two HTML div elements to hold the two halves of the array
     let bars = container.children;
     let length = bars.length;
+    if (length <= 1) {
+        return;
+    }
     let left = document.createElement('div');
     let right = document.createElement('div');
     //if branch is defined, set the id's to branch+l and branch+r
@@ -576,8 +580,9 @@ function animateMovesList(moves) {
                     else {
                         container = document.getElementById(moves[i].branch);
                     }
-                    splitArrayContainer(container, moves[i].index, moves[i].branch);
+                    splitArrayContainer(container, moves[i].branch);
                 })
+                break;
             case 'done':
                 setTimeout(() => {
                     unlockAllSortButtons();
