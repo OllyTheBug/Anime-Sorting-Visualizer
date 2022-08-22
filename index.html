@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div id="control-and-array" class="flex one two-800">
+    <div id="control-and-array" class="flex one three-800">
         <div id="controls" class="full fifth-800">
             <div id="control-stack">
                 <!-- buttons are PicnicCSS stack elements -->
@@ -20,15 +20,33 @@
                     <p>Yet another</p>
                     <h1>Sorting Visualizer</h1>
                     <p>Nobody asked for</p>
+                    <hr>
                 </div>
-                <span class="stack button" onclick="createBarArray(10)">Generate Array</span>
-                <span class="stack button" onclick="animateBubbleSort()">Bubble Sort</span>
-                <span class="stack button"></span>
-                <span class="stack button"></span>
-                <span class="stack button"></span>
+                <div class="size-container">
+                    <h3 style="margin-top:10px; padding:0px;">Size:</h3>
+                    <input type="range" style="margin:0px; padding:0px;" min="1" max="40" value="15" class="slider"
+                        id="size-slider">
+                </div>
+                <div class="speed-container">
+                    <h3 style="margin-top:10px; padding:0px;">Speed:</h3>
+                    <input type="range" style="margin:0px; padding:0px;" min="100" max="250" value="200" class="slider"
+                        id="speed-slider">
+                </div>
+                <span class="stack button" onclick="createBarArray()">Generate Array</span>
+                <span class="stack button sortbutton" id="bubble">Bubble Sort</span>
+                <span class="stack button sortbutton" id="selection">Selection Sort</span>
+                <span class="stack button sortbutton" id="insertion">Insertion Sort</span>
+                <span class="stack button sortbutton" id="quick"> Quicksort</span>
+                <!-- <span class="stack button sortbutton" id="merge">Merge Sort</span>
+                <span class="stack button sortbutton" id="heap">Heap Sort</span> -->
+            </div>
+            <div>
+                <h3>Note:</h3>
+                <p>The time to complete the animation is not necessarily indicative of the time to <i>compute</i> the sort. This is only meant to visualize patterns in each algorithm. </p>
             </div>
         </div>
-        <div id="array-container"></div>
+        <div id="outer-container" class="array-container three-fifth-800"></div>
+        <div id="temp" class="array-container card"></div>
     </div>
 
     <script src="./assets/js/anime.js"></script>

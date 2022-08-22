@@ -6,34 +6,29 @@
 
 #control-and-array {
     width: 75vw;
-    margin:auto;
+    margin:
+    auto;
     margin-top: 10vh;
+    border-left: solid 2px #dbdbdb!important;
+    padding-left: 10px!important;
 }
 
 .array-container {
+    margin:5px;
     display: flex;
     flex-direction: row;
-    height: 100%;
-    margin: auto;
-
-    border-width: 1px;
-    border-style: solid;
-    border-color: black; 
-
-    border-radius: 5px;
-    background-color: #f5f5f5;
-
-    justify-content: center;
-    align-items: end;
+    justify-content: space-evenly;
+    align-items: flex-start;
 }
 
 .bar {
-    position: absolute;
+    /* position: relative; */
+    flex-grow: 1;
     border: solid black 1px;
-    margin: 0;
-    float:left;
+    /* margin: 0; */
+    /* float: left; */
     background-color: cornflowerblue;
-    padding: 0;
+    /* padding: 0; */
     /* transition: left 1s; */
 }
 
@@ -44,4 +39,8 @@
 div#title-box>* {
     margin:0px;
     padding: 0px;
+}
+div#temp {
+    width: 500px;
+    height: 500px;
 }
