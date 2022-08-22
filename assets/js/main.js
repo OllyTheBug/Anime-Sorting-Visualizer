@@ -100,6 +100,8 @@ function swapBarsInDom(index1, index2) {
 */
 const splitArrayContainer = (bars, index) => {
     //create two HTML div elements to hold the two halves of the array
+    let bars = container.children;
+    let length = bars.length;
     let left = document.createElement('div');
     let right = document.createElement('div');
     //add array-container class to the two new div elements
@@ -138,8 +140,12 @@ const splitArrayContainer = (bars, index) => {
     left.style.height = `${maxHeight}px`;
     right.style.width = `50%`;
     right.style.height = `${maxHeight}px`;
-    parent.appendChild(left);
-    parent.appendChild(right);
+    if(length<=1){
+        //remove the left element's border
+        left.style.border = 'none';
+    }
+    container.appendChild(left);
+    container.appendChild(right);
 
 }
 
@@ -390,8 +396,27 @@ const heapify = (array, index) => {
 *   @param {HTMLCollection} bars - the bars to be sorted
 *   @returns {HTMLCollection} - the sorted bars
 */
-const mergeSort = (bars) => {
+const mergeSort = (array, start, end, branch) => {
+    //if the array is length 1, return it
+    //exception for the last branch which won't split otherwise.
+    let mid = Math.floor((start + end) / 2);
+    if (branch === 'rrr'){
+        moves.push({ 'type': 'split', 'index': mid, 'branch': branch });
+    }
+    if (start === end) {
+        return;
+    }
 
+    //split the array in half
+    
+    //add a move to the array of moves
+    moves.push({ 'type': 'split', 'index': mid, 'branch': branch });
+    //recursively sort the left half
+    mergeSort(array, start, mid, branch + 'l');
+    //recursively sort the right half
+    mergeSort(array, mid  + 1, end, branch + 'r');
+    //merge the two halves back together in sorted order
+    merge(array, start, mid, end, branch);
 
     return bars;
 

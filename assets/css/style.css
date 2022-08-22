@@ -14,7 +14,7 @@
 }
 
 .array-container {
-    margin:10px;
+    margin:5px;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -39,4 +39,8 @@
 div#title-box>* {
     margin:0px;
     padding: 0px;
+}
+div#temp {
+    width: 500px;
+    height: 500px;
 }
