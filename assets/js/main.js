@@ -98,12 +98,21 @@ function swapBarsInDom(index1, index2) {
 * @param {HTMLCollcetion} bars - the array of bars to be split
 * @param {number} index - where the array should be split
 */
-const splitArrayContainer = (bars, index) => {
+const splitArrayContainer = (container, branch) => {
+
+    index = Math.floor(container.children.length / 2);
+
+
     //create two HTML div elements to hold the two halves of the array
     let bars = container.children;
     let length = bars.length;
     let left = document.createElement('div');
     let right = document.createElement('div');
+    //if branch is defined, set the id's to branch+l and branch+r
+    if (branch !== undefined) {
+        left.id = branch + 'l';
+        right.id = branch + 'r';
+    }
     //add array-container class to the two new div elements
     left.classList.add('array-container', 'card');
     right.classList.add('array-container', 'card');
@@ -112,38 +121,30 @@ const splitArrayContainer = (bars, index) => {
     let maxHeight = 0;
     //move the first half of the array to the left div
     for (let i = 0; i < index; i++) {
-        console.log(i)
-
-        if (bars[i].offsetHeight > maxHeight) {
-            maxHeight = bars[i].offsetHeight;
+        if (bars[0].offsetHeight > maxHeight) {
+            maxHeight = bars[0].offsetHeight;
         }
-        left.appendChild(bars[i]);
+        left.appendChild(bars[0]);
     }
     //move the second half of the array to the right div
-    for (let i = index; i < bars.length; i++) {
-        if (bars[i].offsetHeight > maxHeight) {
-            maxHeight = bars[i].offsetHeight;
+    for (let i = index; i < length; i++) {
+        if (bars[0].offsetHeight > maxHeight) {
+            maxHeight = bars[0].offsetHeight;
         }
-        right.appendChild(bars[i]);
+        right.appendChild(bars[0]);
     }
     //set the width of each div based on the number of bars in the array
     let totalBars = bars.length;
     let leftWidth = (left.offsetWidth / totalBars) * barWidth - 1;
     let rightWidth = (right.offsetWidth / totalBars) * barWidth - 1;
 
-    console.log("hmm");
-    //get the parent node
-    let parent = bars[0].parentNode;
-    parent.innerHTML = '';
+
+    container.innerHTML = '';
     //add the bars to #array-container
     left.style.width = `50%`;
     left.style.height = `${maxHeight}px`;
     right.style.width = `50%`;
     right.style.height = `${maxHeight}px`;
-    if(length<=1){
-        //remove the left element's border
-        left.style.border = 'none';
-    }
     container.appendChild(left);
     container.appendChild(right);
 
@@ -389,6 +390,18 @@ const heapify = (array, index) => {
 
 
 /* ------------------------------- Merge Sort ------------------------------- */
+
+const executeMergeSort = () => {
+    let container = getOuterContainer();
+    let bars = container.children;
+    let len = bars.length;
+    //bars to array to simplify the code.
+    let barsArray = Array.from(bars).map(bar => bar.offsetHeight);
+    //recursively sort the array
+    array = mergeSort(barsArray, 0, len - 1, '');
+    return moves;
+}
+
 /*
 *   Recursively splits the array into two halves, then merges them back together in sorted order
 *   Time Complexity: O(n log n)
@@ -408,17 +421,16 @@ const mergeSort = (array, start, end, branch) => {
     }
 
     //split the array in half
-    
+    let mid = Math.floor((start + end) / 2);
     //add a move to the array of moves
     moves.push({ 'type': 'split', 'index': mid, 'branch': branch });
     //recursively sort the left half
     mergeSort(array, start, mid, branch + 'l');
     //recursively sort the right half
-    mergeSort(array, mid  + 1, end, branch + 'r');
+    mergeSort(array, mid + 1, end, branch + 'r');
     //merge the two halves back together in sorted order
     merge(array, start, mid, end, branch);
 
-    return bars;
 
 }
 
@@ -430,25 +442,54 @@ const mergeSort = (array, start, end, branch) => {
 *   @param {HTMLCollection} right - the right array
 *   @return {HTMLCollection} - the merged array
 */
-const merge = (left, right) => {
-
-}
-
-const splitDOMchildrenAtIndex = (bars, index) => {
-    let left = [];
-    let right = [];
-    let length = bars.length;
-    for (let i = 0; i < bars.length; i++) {
-        if (i < index) {
-            left.push(bars[i]);
+const merge = (array, start, mid, end, branch) => {
+    //create markers i and j
+    i = start;
+    j = mid + 1;
+    //create a temporary array to hold the merged array
+    let temp = [];
+    //add a move to create the temporary array
+    moves.push({ 'type': 'merge', 'index': start, 'branch': branch });
+    while (i <= mid && j <= end) {
+        if (array[i] < array[j]) {
+            //add the element at i to the temporary array
+            temp.push(array[i]);
+            //add a move to the array of moves
+            moves.push({ 'type': 'add', 'index': i, 'branch': branch });
+            i++;
         } else {
-            right.push(bars[i]);
+            temp.push(array[j]);
+            moves.push({ 'type': 'add', 'index': j, 'branch': branch });
+            j++;
         }
     }
+    while (i <= mid) {
+        temp.push(array[i]);
+        moves.push({ 'type': 'add', 'index': i, 'branch': branch });
+        i++;
+    }
+    while (j <= end) {
+        temp.push(array[j]);
+        moves.push({ 'type': 'add', 'index': j, 'branch': branch });
+        j++;
+    }
+    //copy the temporary array back into the original array
+    for (let k = 0; k < temp.length; k++) {
+        array[start + k] = temp[k];
+    }
+    moves.push({ 'type': 'rejoin', 'branch': branch });
+}
 
-    //move left bars left and right bars right
-    return [left, right];
 
+const insertInArray = (array, index, value) => {
+    //create a temp array to hold the elements after the index
+    let temp = array.slice(index);
+    //set the element at index to value
+    array[index] = value;
+    //loop through the temp array and insert the elements into the array
+    for (let i = 0; i < temp.length; i++) {
+        array[index + i + 1] = temp[i];
+    }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -507,7 +548,7 @@ function animateSort(type) {
             moves = executeQuickSort();
             break;
         case 'merge':
-            moves = mergeSort();
+            moves = executeMergeSort();
             break;
         case 'heap':
             moves = executeHeapSort();
@@ -530,6 +571,19 @@ function animateMovesList(moves) {
                     let index2 = moves[i].index2;
                     animateBarSwap(index1, index2);
                 }, i * 1.5 * animationDuration);
+                break;
+
+            case 'split':
+                setTimeout(() => {
+                    let index = moves[i].index;
+                    if (moves[i].branch === '') {
+                        container = getOuterContainer()
+                    }
+                    else {
+                        container = document.getElementById(moves[i].branch);
+                    }
+                    splitArrayContainer(container, moves[i].branch);
+                })
                 break;
             case 'done':
                 setTimeout(() => {
@@ -595,8 +649,6 @@ const animateBarSwap = (index1, index2) => {
 //main function
 const main = () => {
     createBarArray(15);
-    let bars = getOuterContainer().children;
-    splitArrayContainer(bars, 4);
 
     setSortButtonClickListeners();
     var sizeSlider = document.getElementById("size-slider");
